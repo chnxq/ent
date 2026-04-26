@@ -1069,23 +1069,23 @@ func aliases(g *Graph) {
 			mayAlias[n.PackageDir()] = n
 		}
 	}
-	for _, n := range g.Nodes {
-		for _, f := range n.Fields {
-			if !f.HasGoType() {
-				continue
-			}
-			name := f.Type.PkgName
-			if name == "" && f.Type.PkgPath != "" {
-				name = path.Base(f.Type.PkgPath)
-			}
-			// A user-defined type already uses the
-			// package local name.
-			if n, ok := mayAlias[name]; ok {
-				// By default, a package named "pet" will be named as "entpet".
-				n.alias = path.Base(g.Package) + name
-			}
-		}
-	}
+	//for _, n := range g.Nodes {
+	//	for _, f := range n.Fields {
+	//		if !f.HasGoType() {
+	//			continue
+	//		}
+	//		name := f.Type.PkgName
+	//		if name == "" && f.Type.PkgPath != "" {
+	//			name = path.Base(f.Type.PkgPath)
+	//		}
+	//		// A user-defined type already uses the
+	//		// package local name.
+	//		if n, ok := mayAlias[name]; ok {
+	//			// By default, a package named "pet" will be named as "entpet".
+	//			n.alias = path.Base(g.Package) + name
+	//		}
+	//	}
+	//}
 }
 
 // sqlComment returns the SQL database comment for the node (table), if defined and enabled.

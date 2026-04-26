@@ -84,7 +84,7 @@ func JSON(name string, typ any) *jsonBuilder {
 		b.desc.Err = errors.New("expect a Go value as JSON type but got nil")
 		return b
 	}
-	b.desc.Info.Ident = t.String()
+	b.desc.Info.Ident = pkgNameRef(t.String())
 	b.desc.Info.PkgPath = t.PkgPath()
 	b.desc.goType(typ)
 	b.desc.checkGoType(t)
@@ -1447,14 +1447,14 @@ func (d *Descriptor) goType(typ any) {
 	tv := indirect(t)
 	info := &TypeInfo{
 		Type:    d.Info.Type,
-		Ident:   t.String(),
+		Ident:   pkgNameRef(t.String()),
 		PkgPath: tv.PkgPath(),
 		PkgName: pkgName(tv.String()),
 		RType: &RType{
 			rtype:   t,
 			Kind:    t.Kind(),
 			Name:    tv.Name(),
-			Ident:   tv.String(),
+			Ident:   pkgNameRef(tv.String()),
 			PkgPath: tv.PkgPath(),
 			Methods: make(map[string]struct{ In, Out []*RType }, t.NumMethod()),
 		},
@@ -1510,6 +1510,21 @@ func pkgName(ident string) string {
 		s = s[i+1:]
 	}
 	return s
+}
+
+// pkgNameRef returns replaced package name from a Go
+// identifier with a package qualifier. add 'ref' prefix
+func pkgNameRef(ident string) string {
+	i := strings.LastIndexByte(ident, '.')
+	if i == -1 {
+		return ""
+	}
+	s := ident[:i]
+	if i := strings.LastIndexAny(s, "]*"); i != -1 {
+		s = s[i+1:]
+	}
+	ss := strings.Replace(ident, s, "ref"+s, -1)
+	return ss
 }
 
 func methods(t reflect.Type, rtype *RType) {
